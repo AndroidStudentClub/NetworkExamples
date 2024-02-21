@@ -9,13 +9,13 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import ru.mikhailskiy.retrofitexample.adapters.MoviesAdapter
 import ru.mikhailskiy.retrofitexample.data.Movie
 import ru.mikhailskiy.retrofitexample.data.MoviesResponse
+import ru.mikhailskiy.retrofitexample.databinding.ActivityMainBinding
 import ru.mikhailskiy.retrofitexample.network.CacheApiClient
 import ru.mikhailskiy.retrofitexample.network.MovieApiClient
 import java.util.concurrent.TimeUnit
@@ -23,10 +23,14 @@ import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
 
+
+    lateinit var binding: ActivityMainBinding
+
     @SuppressLint("CheckResult")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         // Шаг 1: Создать или получить мастер-ключ для шифрования / дешифрования
         val masterKey = MasterKey.Builder(this, MasterKey.DEFAULT_MASTER_KEY_ALIAS)
@@ -46,7 +50,7 @@ class MainActivity : AppCompatActivity() {
         editor.putString("KEY", API_KEY)
         editor.apply()
 
-        search_toolbar
+        binding.searchToolbar
             .onTextChangedObservable
             .map { it.trim() }
             .doOnNext { Log.d("THR# 38", Thread.currentThread().name) }
@@ -92,7 +96,7 @@ class MainActivity : AppCompatActivity() {
                 val movies = response.body()?.results
                 // Передаем результат в adapter и отображаем элементы
                 movies?.let {
-                    movies_recycler_view.adapter = MoviesAdapter(movies, R.layout.list_item_movie)
+                    binding.moviesRecyclerView.adapter = MoviesAdapter(movies, R.layout.list_item_movie)
                 }
             }
         })
@@ -100,7 +104,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun setMovies(movies: List<Movie>) {
-        movies_recycler_view.adapter = MoviesAdapter(movies, R.layout.list_item_movie)
+        binding.moviesRecyclerView.adapter = MoviesAdapter(movies, R.layout.list_item_movie)
     }
 
     companion object {
@@ -108,6 +112,6 @@ class MainActivity : AppCompatActivity() {
         private val TAG = MainActivity::class.java.simpleName
 
         // TODO - insert your themoviedb.org API KEY here
-        private val API_KEY = "Put Your Api Here"
+        private val API_KEY = ""
     }
 }
